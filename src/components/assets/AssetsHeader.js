@@ -16,6 +16,7 @@ import {
   Renew,
   Download,
 } from "@carbon/icons-react";
+import { currencyCodes } from "../../constants/currencyCodes";
 
 /**
  * AssetsHeader - Header with controls using Carbon Design System
@@ -57,22 +58,16 @@ const AssetsHeader = ({
     { id: "category", label: "Category" },
   ];
 
-  // Import all currency codes from constants
-  const currencyOptions = [
-    { id: "USD", label: "USD" },
-    { id: "EUR", label: "EUR" },
-    { id: "GBP", label: "GBP" },
-    { id: "AUD", label: "AUD" },
-    { id: "JPY", label: "JPY" },
-    { id: "AED", label: "AED" },
-    { id: "AFN", label: "AFN" },
-    { id: "ALL", label: "ALL" },
-    // Add more as needed
-  ];
+  // Use all currency codes from constants - match Allocations page
+  const currencyOptions = currencyCodes.map((code) => ({
+    id: code,
+    label: code,
+  }));
 
-  const selectedTimeWindow = timeWindowOptions.find((o) => o.id === timeWindow);
-  const selectedBreakdown = breakdownOptions.find((o) => o.id === breakdown);
-  const selectedCurrency = currencyOptions.find((o) => o.id === currency) || { id: currency, label: currency };
+  // Find selected items - ensure they always exist (important for controlled component)
+  const selectedTimeWindow = timeWindowOptions.find((o) => o.id === timeWindow) || null;
+  const selectedBreakdown = breakdownOptions.find((o) => o.id === breakdown) || null;
+  const selectedCurrency = currencyOptions.find((o) => o.id === currency) || null;
 
   return (
     <div
@@ -91,18 +86,17 @@ const AssetsHeader = ({
         <Dropdown
           id="time-window-dropdown"
           titleText="Date Range"
-          label={selectedTimeWindow?.label || "Select time window"}
           items={timeWindowOptions}
           itemToString={(item) => (item ? item.label : "")}
           selectedItem={selectedTimeWindow}
           onChange={({ selectedItem }) => {
+            // Carbon Dropdown automatically closes on selection
             if (selectedItem) {
               onTimeWindowChange(selectedItem.id);
             }
           }}
           disabled={loading}
           size="md"
-          type="default"
         />
       </div>
 
@@ -111,18 +105,17 @@ const AssetsHeader = ({
         <Dropdown
           id="breakdown-dropdown"
           titleText="Breakdown"
-          label={selectedBreakdown?.label || "Select breakdown"}
           items={breakdownOptions}
           itemToString={(item) => (item ? item.label : "")}
           selectedItem={selectedBreakdown}
           onChange={({ selectedItem }) => {
+            // Carbon Dropdown automatically closes on selection
             if (selectedItem) {
               onBreakdownChange(selectedItem.id);
             }
           }}
           disabled={loading}
           size="md"
-          type="default"
         />
       </div>
 
@@ -131,18 +124,17 @@ const AssetsHeader = ({
         <Dropdown
           id="currency-dropdown"
           titleText="Currency"
-          label={selectedCurrency?.label || currency}
           items={currencyOptions}
           itemToString={(item) => (item ? item.label : "")}
           selectedItem={selectedCurrency}
           onChange={({ selectedItem }) => {
+            // Carbon Dropdown automatically closes on selection
             if (selectedItem) {
               onCurrencyChange(selectedItem.id);
             }
           }}
           disabled={loading}
           size="md"
-          type="default"
         />
       </div>
 
