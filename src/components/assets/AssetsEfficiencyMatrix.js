@@ -78,59 +78,88 @@ const AssetsEfficiencyMatrix = ({ data, onAssetClick }) => {
     // Store asset positions for click detection
     const assetPositions = [];
 
-    // Draw asset bubbles
+    // Draw asset bubbles (CRITICAL: Make bubbles visible!)
     data.forEach((asset) => {
-      const utilization = (asset.utilization || 0) * 100;
+      const utilization = asset.utilization || 0;
       const cost = asset.totalCost || 0;
 
       // Calculate position
-      const x = (utilization / maxUtilization) * width;
-      const y = height - (cost / maxCost) * height;
+      // X-axis: Utilization (0 = left, 1 = right)
+      const x = utilization * width;
+      
+      // Y-axis: Cost (0 = bottom, maxCost = top)
+      // Invert Y so high cost is at top
+      const y = height - ((cost / maxCost) * height);
 
-      // Calculate bubble size (proportional to cost)
-      const radius = Math.max(5, Math.min(20, Math.sqrt(cost) * 2));
+      // Calculate bubble size (proportional to cost, but ensure minimum visibility)
+      // Use larger multiplier to make bubbles more visible
+      const baseRadius = Math.max(8, Math.min(30, Math.sqrt(cost) * 5));
+      const radius = cost > 0 ? baseRadius : 8;
 
       // Determine color based on quadrant
       const quadrant = asset.quadrant || "review";
       let color;
       if (quadrant === "critical") {
-        color = "rgba(218, 30, 40, 0.7)";
+        color = "rgba(218, 30, 40, 0.8)"; // More opaque for visibility
       } else if (quadrant === "review") {
-        color = "rgba(241, 194, 27, 0.7)";
+        color = "rgba(241, 194, 27, 0.8)";
       } else {
-        color = "rgba(36, 161, 72, 0.7)";
+        color = "rgba(36, 161, 72, 0.8)";
       }
 
-      // Draw bubble
+      // Draw bubble with shadow for visibility
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      
+      // Add shadow
+      ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      // Fill bubble
       ctx.fillStyle = color;
       ctx.fill();
-      ctx.strokeStyle = "rgba(0, 0, 0, 0.2)";
-      ctx.lineWidth = 1;
+      
+      // Reset shadow
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      // Border
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.3)";
+      ctx.lineWidth = 2;
       ctx.stroke();
 
       // Store for click detection
       assetPositions.push({ x, y, radius, asset });
     });
 
-    // Store positions for click handler
+    // Store positions for click handler on canvas element
     canvas.assetPositions = assetPositions;
   }, [data, maxCost, maxUtilization]);
 
   const handleCanvasClick = (e) => {
-    if (!canvasRef.current || !canvasRef.current.assetPositions) return;
-
     const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    if (!canvas || !canvas.assetPositions || canvas.assetPositions.length === 0) {
+      return;
+    }
 
-    // Find clicked asset
-    const clicked = canvas.assetPositions.find(({ x: bx, y: by, radius }) => {
-      const distance = Math.sqrt((x - bx) ** 2 + (y - by) ** 2);
-      return distance <= radius;
-    });
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    // Find clicked asset (reverse order to get top-most bubble)
+    const clicked = canvas.assetPositions
+      .slice()
+      .reverse()
+      .find(({ x: bx, y: by, radius }) => {
+        const distance = Math.sqrt((x - bx) ** 2 + (y - by) ** 2);
+        return distance <= radius;
+      });
 
     if (clicked && onAssetClick) {
       onAssetClick(clicked.asset);

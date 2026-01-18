@@ -1,5 +1,8 @@
 import { Loading, InlineNotification } from "@carbon/react";
 import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { find, get } from "lodash";
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -8,6 +11,7 @@ import Header from "../components/Header";
 import Page from "../components/Page";
 import Footer from "../components/Footer";
 import Subtitle from "../components/Subtitle";
+import Warnings from "../components/Warnings";
 import AssetsService from "../services/assets";
 import {
   checkCustomWindow,
@@ -187,61 +191,70 @@ const AssetsPage = () => {
 
   return (
     <Page active="assets">
-      <Header headerTitle="Infrastructure Assets" />
+      {/* Header with title and refresh button - matches Cost Allocation pattern exactly */}
+      <Header headerTitle="Infrastructure Assets">
+        <IconButton
+          aria-label="refresh"
+          onClick={() => fetchData()}
+          style={{ padding: 12 }}
+        >
+          <RefreshIcon />
+        </IconButton>
+      </Header>
 
-      {/* Carbon InlineNotification for errors */}
+      {/* Error warnings - matches Cost Allocation pattern */}
       {!loading && errors.length > 0 && (
-        <div style={{ marginBottom: "1rem", padding: "0 1.5rem" }}>
-          {errors.map((error, index) => (
-            <InlineNotification
-              key={index}
-              kind="error"
-              title={error.primary}
-              subtitle={error.secondary}
-              lowContrast
-              style={{ marginBottom: "0.5rem" }}
-            />
-          ))}
+        <div style={{ marginBottom: 20 }}>
+          <Warnings warnings={errors} />
         </div>
       )}
 
       <Paper id="assets-report">
-        {/* Carbon AssetsHeader - Most Visible Carbon Component! */}
-        <AssetsHeader
-          timeWindow={win}
-          onTimeWindowChange={(win) => {
-            searchParams.set("window", win);
-            navigate({
-              search: `?${searchParams.toString()}`,
-            });
-          }}
-          breakdown={breakdown}
-          onBreakdownChange={(breakdown) => {
-            searchParams.set("breakdown", breakdown);
-            navigate({
-              search: `?${searchParams.toString()}`,
-            });
-          }}
-          currency={currency}
-          onCurrencyChange={(curr) => {
-            searchParams.set("currency", curr);
-            navigate({
-              search: `?${searchParams.toString()}`,
-            });
-          }}
-          onRefresh={() => fetchData()}
-          onExport={() => {
-            if (filteredData && filteredData.length > 0) {
-              exportToCSV(
-                filteredData,
-                `assets-${win}-${breakdown}-${new Date().toISOString().split("T")[0]}.csv`
-              );
-            }
-          }}
-          loading={loading}
-          title={title}
-          subtitle={subtitle}
-        />
+        {/* Title/Subtitle and Controls Row - matches Cost Allocation pattern exactly */}
+        <div style={{ display: "flex", flexFlow: "row", padding: 24 }}>
+          {/* Left side: Title and Subtitle */}
+          <div style={{ flexGrow: 1 }}>
+            <Typography variant="h5">{title}</Typography>
+            <Subtitle report={{ window: win, aggregateBy: breakdown }} />
+          </div>
+
+          {/* Right side: Carbon Controls - matches Cost Allocation pattern */}
+          <AssetsHeader
+            timeWindow={win}
+            onTimeWindowChange={(win) => {
+              searchParams.set("window", win);
+              navigate({
+                search: `?${searchParams.toString()}`,
+              });
+            }}
+            breakdown={breakdown}
+            onBreakdownChange={(breakdown) => {
+              searchParams.set("breakdown", breakdown);
+              navigate({
+                search: `?${searchParams.toString()}`,
+              });
+            }}
+            currency={currency}
+            onCurrencyChange={(curr) => {
+              searchParams.set("currency", curr);
+              navigate({
+                search: `?${searchParams.toString()}`,
+              });
+            }}
+            onRefresh={() => fetchData()}
+            onExport={() => {
+              if (filteredData && filteredData.length > 0) {
+                exportToCSV(
+                  filteredData,
+                  `assets-${win}-${breakdown}-${new Date().toISOString().split("T")[0]}.csv`
+                );
+              }
+            }}
+            loading={loading}
+            title={title}
+            subtitle={subtitle}
+          />
+        </div>
 
         {/* Carbon Loading Component */}
         {loading && (
@@ -258,21 +271,30 @@ const AssetsPage = () => {
         )}
         {!loading && (
           <>
+            {/* Summary Metrics - 4 tiles in row */}
             <AssetsSummary metrics={summaryMetrics} currency={currency} />
+
+            {/* Visualizations - side by side */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "1rem",
-                padding: "0 24px 24px 24px",
+                marginBottom: "1.5rem",
               }}
             >
               <AssetsEfficiencyMatrix
                 data={filteredData}
                 onAssetClick={setSelectedAsset}
               />
-              <AssetsChart data={filteredData} breakdown={breakdown} />
+              <AssetsChart
+                data={filteredData}
+                breakdown={breakdown}
+                currency={currency}
+              />
             </div>
+
+            {/* Table - full width with Totals row at top */}
             <AssetsTable
               data={filteredData}
               currency={currency}

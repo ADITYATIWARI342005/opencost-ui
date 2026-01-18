@@ -70,106 +70,88 @@ const AssetsHeader = ({
   const selectedCurrency = currencyOptions.find((o) => o.id === currency);
 
   return (
-    <div className="assets-header" style={{ padding: "1.5rem", marginBottom: "1rem" }}>
-      {/* Title Row */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "0.5rem",
-        }}
-      >
-        <div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 400, margin: 0 }}>
-            Infrastructure Assets
-          </h1>
-          {subtitle && (
-            <p
-              style={{
-                fontSize: "0.875rem",
-                color: "var(--cds-text-secondary, #525252)",
-                margin: "0.25rem 0 0 0",
-              }}
-            >
-              {subtitle}
-            </p>
-          )}
-        </div>
+    <div
+      className="assets-header"
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        gap: "1rem",
+        alignItems: "flex-start",
+        flexWrap: "wrap",
+        flex: "0 0 auto",
+      }}
+    >
+      {/* Date Range Dropdown - Carbon Component (Most Visible!) */}
+      <div style={{ minWidth: "150px", flex: "0 0 auto" }}>
+        <Dropdown
+          id="time-window-dropdown"
+          titleText="Date Range"
+          label={selectedTimeWindow?.text || "Select time window"}
+          items={timeWindowOptions}
+          itemToString={(item) => item?.text || ""}
+          selectedItem={selectedTimeWindow}
+          onChange={({ selectedItem }) => {
+            if (selectedItem) {
+              onTimeWindowChange(selectedItem.id);
+            }
+          }}
+          disabled={loading}
+          size="md"
+        />
+      </div>
+
+      {/* Breakdown Dropdown - Carbon Component */}
+      <div style={{ minWidth: "150px", flex: "0 0 auto" }}>
+        <Dropdown
+          id="breakdown-dropdown"
+          titleText="Breakdown"
+          label={selectedBreakdown?.text || "Select breakdown"}
+          items={breakdownOptions}
+          itemToString={(item) => item?.text || ""}
+          selectedItem={selectedBreakdown}
+          onChange={({ selectedItem }) => {
+            if (selectedItem) {
+              onBreakdownChange(selectedItem.id);
+            }
+          }}
+          disabled={loading}
+          size="md"
+        />
+      </div>
+
+      {/* Currency Dropdown - Carbon Component */}
+      <div style={{ minWidth: "150px", flex: "0 0 auto" }}>
+        <Dropdown
+          id="currency-dropdown"
+          titleText="Currency"
+          label={selectedCurrency?.text || currency}
+          items={currencyOptions}
+          itemToString={(item) => item?.text || ""}
+          selectedItem={selectedCurrency}
+          onChange={({ selectedItem }) => {
+            if (selectedItem) {
+              onCurrencyChange(selectedItem.id);
+            }
+          }}
+          disabled={loading}
+          size="md"
+        />
+      </div>
+
+      {/* Export Button - Carbon Component */}
+      <div style={{ flex: "0 0 auto" }}>
         <Button
           kind="ghost"
           hasIconOnly
-          iconDescription="Refresh"
-          onClick={onRefresh}
+          iconDescription="Export CSV"
+          onClick={onExport}
           disabled={loading}
+          renderIcon={Download}
           tooltipPosition="bottom"
         >
-          <Renew size={20} />
+          <Download size={20} />
         </Button>
       </div>
-
-      {/* Controls Row - Carbon Dropdowns (Most Visible Carbon Usage!) */}
-      <Grid narrow fullWidth>
-        <Column sm={4} md={4} lg={3}>
-          <Dropdown
-            id="time-window-dropdown"
-            titleText="Date Range"
-            label={selectedTimeWindow?.text || "Select time window"}
-            items={timeWindowOptions}
-            itemToString={(item) => item?.text || ""}
-            selectedItem={selectedTimeWindow}
-            onChange={({ selectedItem }) => {
-              if (selectedItem) {
-                onTimeWindowChange(selectedItem.id);
-              }
-            }}
-            disabled={loading}
-          />
-        </Column>
-        <Column sm={4} md={4} lg={3}>
-          <Dropdown
-            id="breakdown-dropdown"
-            titleText="Breakdown"
-            label={selectedBreakdown?.text || "Select breakdown"}
-            items={breakdownOptions}
-            itemToString={(item) => item?.text || ""}
-            selectedItem={selectedBreakdown}
-            onChange={({ selectedItem }) => {
-              if (selectedItem) {
-                onBreakdownChange(selectedItem.id);
-              }
-            }}
-            disabled={loading}
-          />
-        </Column>
-        <Column sm={4} md={4} lg={3}>
-          <Dropdown
-            id="currency-dropdown"
-            titleText="Currency"
-            label={selectedCurrency?.text || currency}
-            items={currencyOptions}
-            itemToString={(item) => item?.text || ""}
-            selectedItem={selectedCurrency}
-            onChange={({ selectedItem }) => {
-              if (selectedItem) {
-                onCurrencyChange(selectedItem.id);
-              }
-            }}
-            disabled={loading}
-          />
-        </Column>
-        <Column sm={4} md={4} lg={3}>
-          <Button
-            kind="secondary"
-            renderIcon={Download}
-            onClick={onExport}
-            disabled={loading}
-            style={{ width: "100%" }}
-          >
-            Export CSV
-          </Button>
-        </Column>
-      </Grid>
     </div>
   );
 };

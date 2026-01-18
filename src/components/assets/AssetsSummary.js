@@ -60,25 +60,52 @@ const AssetsSummary = ({ metrics, currency }) => {
     <div className="assets-summary" style={{ padding: "0 1.5rem 1.5rem 1.5rem" }}>
       <Grid narrow fullWidth>
         {summaryCards.map((card, index) => (
-          <Column key={index} sm={4} md={4} lg={3}>
-            <Tile className="assets-summary__tile">
+          <Column key={index} sm={4} md={4} lg={3} xlg={3}>
+            <Tile
+              className="assets-summary__tile"
+              style={{
+                padding: "1rem",
+                height: "100%",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "1rem",
+              }}
+            >
               <div
                 className="assets-summary__tile-icon"
-                style={{ color: card.color }}
+                style={{
+                  color: card.color,
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
                 {card.icon}
               </div>
-              <div className="assets-summary__tile-content">
-                <p className="assets-summary__tile-label">{card.label}</p>
+              <div className="assets-summary__tile-content" style={{ flexGrow: 1 }}>
+                <p
+                  className="assets-summary__tile-label"
+                  style={{
+                    fontSize: "0.875rem",
+                    color: "var(--cds-text-secondary, #525252)",
+                    margin: "0 0 0.5rem 0",
+                  }}
+                >
+                  {card.label}
+                </p>
                 <p
                   className="assets-summary__tile-value"
                   style={{
+                    fontSize: "1.5rem",
+                    fontWeight: 600,
+                    margin: "0 0 0.25rem 0",
                     color:
                       card.label === "Waste Detected"
-                        ? "var(--cds-support-error)"
+                        ? "var(--cds-support-error, #da1e28)"
                         : card.label === "Efficiency Score"
                         ? card.color
-                        : "var(--cds-text-primary)",
+                        : "var(--cds-text-primary, #161616)",
                   }}
                 >
                   {card.value}
@@ -86,10 +113,12 @@ const AssetsSummary = ({ metrics, currency }) => {
                 <p
                   className="assets-summary__tile-subtitle"
                   style={{
+                    fontSize: "0.75rem",
+                    margin: 0,
                     color:
                       card.label === "Efficiency Score"
                         ? card.color
-                        : "var(--cds-text-secondary)",
+                        : "var(--cds-text-secondary, #525252)",
                   }}
                 >
                   {card.subtitle}
