@@ -67,16 +67,18 @@ const AssetsEfficiencyMatrix = ({ data, onAssetClick }) => {
     ctx.lineTo(width, midY);
     ctx.stroke();
 
-    // Draw axis labels with improved visibility and contrast
-    ctx.font = "bold 14px 'IBM Plex Sans', Arial, sans-serif"; // Larger, bolder font for readability
+    // Draw axis labels as transparent text overlays - no background boxes
+    ctx.font = "bold 15px 'IBM Plex Sans', Arial, sans-serif"; // Larger, bolder font for readability
     
-    // Top labels (X-axis - Utilization) with white background for contrast
+    // Top labels (X-axis - Utilization) - transparent text with shadow for contrast
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    // White background boxes for better readability on colored quadrants
-    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-    ctx.fillRect(8, 8, 145, 26);
-    ctx.fillRect(width - 153, 8, 145, 26);
+    
+    // Text shadow for better readability on colored backgrounds
+    ctx.shadowColor = "rgba(255, 255, 255, 0.8)";
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
     
     ctx.fillStyle = "#333333"; // Dark gray for high contrast
     ctx.fillText("Low Utilization", 12, 12);
@@ -84,17 +86,31 @@ const AssetsEfficiencyMatrix = ({ data, onAssetClick }) => {
     ctx.textAlign = "right";
     ctx.fillText("High Utilization", width - 12, 12);
     
-    // Left side labels (Y-axis - Cost) with white background for contrast
+    // Reset shadow for left labels
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    // Left side labels (Y-axis - Cost) - transparent text with shadow for contrast
     ctx.textAlign = "left";
     ctx.textBaseline = "bottom";
-    // White background boxes for left labels
-    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-    ctx.fillRect(8, midY - 26, 100, 24);
-    ctx.fillRect(8, height - 26, 100, 24);
+    
+    // Text shadow for better readability on colored backgrounds
+    ctx.shadowColor = "rgba(255, 255, 255, 0.8)";
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
     
     ctx.fillStyle = "#333333"; // Dark gray for high contrast
     ctx.fillText("High Cost", 12, midY - 12);
     ctx.fillText("Low Cost", 12, height - 12);
+    
+    // Reset shadow
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
 
     // Store asset positions for click detection
     const assetPositions = [];

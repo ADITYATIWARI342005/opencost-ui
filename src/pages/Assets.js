@@ -280,7 +280,7 @@ const AssetsPage = () => {
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "1rem",
-                marginBottom: "1.5rem",
+                marginBottom: "2rem", // Increased from 1.5rem to 2rem (32px) for clear separation
                 padding: "0 24px",
                 alignItems: "stretch", // Ensure equal height
               }}
