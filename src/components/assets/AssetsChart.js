@@ -88,30 +88,42 @@ const AssetsChart = ({ data, breakdown, currency }) => {
     breakdown.charAt(0).toUpperCase() + breakdown.slice(1);
 
   return (
-    <Paper elevation={2} sx={{ padding: 2 }}>
-      <Typography variant="h6" sx={{ marginBottom: 2 }}>
+    <Paper 
+      elevation={2} 
+      sx={{ 
+        padding: "1.5rem",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        border: "1px solid #e0e0e0",
+        borderRadius: "4px",
+      }}
+    >
+      <Typography variant="h6" sx={{ marginBottom: "1rem", fontSize: "1.25rem" }}>
         Cost Breakdown by {breakdownLabel}
       </Typography>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          barCategoryGap="20%"
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-          <Bar
-            dataKey="productive"
-            stackId="a"
-            fill="#24a148"
-            name="Productive Cost"
-          />
-          <Bar dataKey="wasted" stackId="a" fill="#da1e28" name="Wasted Cost" />
-        </BarChart>
-      </ResponsiveContainer>
+      <div style={{ flex: "1 1 auto", display: "flex", flexDirection: "column", minHeight: "400px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+            barCategoryGap="20%"
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Bar
+              dataKey="productive"
+              stackId="a"
+              fill="#24a148"
+              name="Productive Cost"
+            />
+            <Bar dataKey="wasted" stackId="a" fill="#da1e28" name="Wasted Cost" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </Paper>
   );
 };

@@ -274,13 +274,15 @@ const AssetsPage = () => {
             {/* Summary Metrics - 4 tiles in row */}
             <AssetsSummary metrics={summaryMetrics} currency={currency} />
 
-            {/* Visualizations - side by side */}
+            {/* Visualizations - side by side with equal sizing */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "1rem",
                 marginBottom: "1.5rem",
+                padding: "0 24px",
+                alignItems: "stretch", // Ensure equal height
               }}
             >
               <AssetsEfficiencyMatrix

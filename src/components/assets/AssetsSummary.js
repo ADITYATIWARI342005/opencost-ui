@@ -45,7 +45,11 @@ const AssetsSummary = ({ metrics, currency }) => {
       label: "Waste Detected",
       value: formatCurrency(metrics.totalIdleCost, currency),
       subtitle: `${metrics.wastePercentage.toFixed(1)}% of total`,
-      color: "var(--cds-support-error)",
+      // Dynamic color: Green when $0.00 (no waste), Red when > $0.00 (waste detected)
+      color: metrics.totalIdleCost === 0 
+        ? "var(--cds-support-success, #24a148)" 
+        : "var(--cds-support-error, #da1e28)",
+      hasWaste: metrics.totalIdleCost > 0,
     },
     {
       icon: <ChartBubble size={24} />,
@@ -105,9 +109,12 @@ const AssetsSummary = ({ metrics, currency }) => {
               className="assets-summary__tile-label"
               style={{
                 fontSize: "0.875rem",
-                color: "var(--cds-text-secondary, #525252)",
+                // Dynamic color for Waste Detected label
+                color: card.label === "Waste Detected"
+                  ? card.color
+                  : "var(--cds-text-secondary, #525252)",
                 margin: 0,
-                fontWeight: 400,
+                fontWeight: card.label === "Waste Detected" ? 500 : 400,
               }}
             >
               {card.label}
@@ -123,7 +130,7 @@ const AssetsSummary = ({ metrics, currency }) => {
                 lineHeight: 1.2,
                 color:
                   card.label === "Waste Detected"
-                    ? "var(--cds-support-error, #da1e28)"
+                    ? card.color // Dynamic: green when $0.00, red when > $0.00
                     : card.label === "Efficiency Score"
                     ? card.color
                     : "var(--cds-text-primary, #161616)",

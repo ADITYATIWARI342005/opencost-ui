@@ -67,13 +67,34 @@ const AssetsEfficiencyMatrix = ({ data, onAssetClick }) => {
     ctx.lineTo(width, midY);
     ctx.stroke();
 
-    // Draw axis labels
-    ctx.fillStyle = "#525252";
-    ctx.font = "12px Arial";
-    ctx.fillText("Low Utilization", 10, 20);
-    ctx.fillText("High Utilization", width - 120, 20);
-    ctx.fillText("High Cost", 10, midY - 10);
-    ctx.fillText("Low Cost", 10, height - 10);
+    // Draw axis labels with improved visibility and contrast
+    ctx.font = "bold 14px 'IBM Plex Sans', Arial, sans-serif"; // Larger, bolder font for readability
+    
+    // Top labels (X-axis - Utilization) with white background for contrast
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    // White background boxes for better readability on colored quadrants
+    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+    ctx.fillRect(8, 8, 145, 26);
+    ctx.fillRect(width - 153, 8, 145, 26);
+    
+    ctx.fillStyle = "#333333"; // Dark gray for high contrast
+    ctx.fillText("Low Utilization", 12, 12);
+    
+    ctx.textAlign = "right";
+    ctx.fillText("High Utilization", width - 12, 12);
+    
+    // Left side labels (Y-axis - Cost) with white background for contrast
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
+    // White background boxes for left labels
+    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+    ctx.fillRect(8, midY - 26, 100, 24);
+    ctx.fillRect(8, height - 26, 100, 24);
+    
+    ctx.fillStyle = "#333333"; // Dark gray for high contrast
+    ctx.fillText("High Cost", 12, midY - 12);
+    ctx.fillText("Low Cost", 12, height - 12);
 
     // Store asset positions for click detection
     const assetPositions = [];
@@ -182,7 +203,17 @@ const AssetsEfficiencyMatrix = ({ data, onAssetClick }) => {
   }, [data]);
 
   return (
-    <Tile className="efficiency-matrix" style={{ padding: "1.5rem" }}>
+    <Tile 
+      className="efficiency-matrix" 
+      style={{ 
+        padding: "1.5rem",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        border: "1px solid #e0e0e0",
+        borderRadius: "4px",
+      }}
+    >
       <h3 style={{ marginBottom: "0.5rem", fontSize: "1.25rem", fontWeight: 400 }}>
         Asset Efficiency Matrix
       </h3>
@@ -200,9 +231,11 @@ const AssetsEfficiencyMatrix = ({ data, onAssetClick }) => {
         ref={containerRef}
         style={{
           position: "relative",
-          marginBottom: "1rem",
+          flex: "1 1 auto",
           display: "flex",
           justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
         }}
       >
         <canvas
@@ -218,7 +251,7 @@ const AssetsEfficiencyMatrix = ({ data, onAssetClick }) => {
         />
       </div>
 
-      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "1rem" }}>
         <Tag type="red" size="sm">
           Critical: {quadrantCounts.critical}
         </Tag>
