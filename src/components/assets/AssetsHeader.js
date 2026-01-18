@@ -1,28 +1,27 @@
 /**
- * AssetsHeader Component - Carbon Design System
+ * AssetsHeader Component - Uses MUI Select to match Allocations page exactly
  * 
- * This is the MOST VISIBLE component - reviewers see it first!
- * Uses Carbon Dropdowns and Buttons to demonstrate Carbon competency.
+ * CRITICAL: Uses Material-UI Select components (not Carbon) to ensure proper overlay behavior
+ * This matches the exact implementation used on the Allocations page.
  */
 
 import React from "react";
-import {
-  Dropdown,
-  Button,
-  Grid,
-  Column,
-} from "@carbon/react";
-import {
-  Renew,
-  Download,
-} from "@carbon/icons-react";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import ExportIcon from "@mui/icons-material/FileDownload";
+
+import SelectWindow from "../SelectWindow";
 import { currencyCodes } from "../../constants/currencyCodes";
 
 /**
- * AssetsHeader - Header with controls using Carbon Design System
+ * AssetsHeader - Header with controls matching Allocations page
  * 
- * This component demonstrates Carbon usage in the most visible part of the page.
- * Reviewers will immediately see Carbon Dropdowns and Buttons here.
+ * Uses MUI Select components which automatically render as overlays/modals.
+ * This ensures dropdowns appear on top of content without affecting page layout.
  */
 const AssetsHeader = ({
   timeWindow,
@@ -37,121 +36,82 @@ const AssetsHeader = ({
   title,
   subtitle,
 }) => {
-  // Time window options matching OpenCost patterns
+  // Time window options - format matching SelectWindow component
   const timeWindowOptions = [
-    { id: "today", label: "Today" },
-    { id: "yesterday", label: "Yesterday" },
-    { id: "24h", label: "Last 24h" },
-    { id: "48h", label: "Last 48h" },
-    { id: "week", label: "Week-to-date" },
-    { id: "lastweek", label: "Last week" },
-    { id: "7d", label: "Last 7 days" },
-    { id: "30d", label: "Last 30 days" },
-    { id: "60d", label: "Last 60 days" },
-    { id: "90d", label: "Last 90 days" },
+    { name: "Today", value: "today" },
+    { name: "Yesterday", value: "yesterday" },
+    { name: "Last 24h", value: "24h" },
+    { name: "Last 48h", value: "48h" },
+    { name: "Week-to-date", value: "week" },
+    { name: "Last week", value: "lastweek" },
+    { name: "Last 7 days", value: "7d" },
+    { name: "Last 30 days", value: "30d" },
+    { name: "Last 60 days", value: "60d" },
+    { name: "Last 90 days", value: "90d" },
   ];
 
+  // Breakdown options - format matching Allocations page
   const breakdownOptions = [
-    { id: "type", label: "Type" },
-    { id: "provider", label: "Provider" },
-    { id: "cluster", label: "Cluster" },
-    { id: "category", label: "Category" },
+    { name: "Type", value: "type" },
+    { name: "Provider", value: "provider" },
+    { name: "Cluster", value: "cluster" },
+    { name: "Category", value: "category" },
   ];
 
-  // Use all currency codes from constants - match Allocations page
-  const currencyOptions = currencyCodes.map((code) => ({
-    id: code,
-    label: code,
-  }));
-
-  // Find selected items - ensure they always exist (important for controlled component)
-  const selectedTimeWindow = timeWindowOptions.find((o) => o.id === timeWindow) || null;
-  const selectedBreakdown = breakdownOptions.find((o) => o.id === breakdown) || null;
-  const selectedCurrency = currencyOptions.find((o) => o.id === currency) || null;
+  // Use all currency codes from constants - match Allocations page exactly
+  // currencyCodes is already an array of strings like ["USD", "EUR", ...]
 
   return (
-    <div
-      className="assets-header"
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        gap: "1rem",
-        alignItems: "flex-start",
-        flexWrap: "wrap",
-        flex: "0 0 auto",
-      }}
-    >
-      {/* Date Range Dropdown - Carbon Component with overlay behavior */}
-      <div style={{ minWidth: "150px", flex: "0 0 auto" }}>
-        <Dropdown
-          id="time-window-dropdown"
-          titleText="Date Range"
-          items={timeWindowOptions}
-          itemToString={(item) => (item ? item.label : "")}
-          selectedItem={selectedTimeWindow}
-          onChange={({ selectedItem }) => {
-            // Carbon Dropdown automatically closes on selection
-            if (selectedItem) {
-              onTimeWindowChange(selectedItem.id);
-            }
+    <div style={{ display: "inline-flex" }}>
+      {/* Date Range - Uses SelectWindow component (same as Allocations page) */}
+      <SelectWindow
+        windowOptions={timeWindowOptions}
+        window={timeWindow}
+        setWindow={onTimeWindowChange}
+      />
+
+      {/* Breakdown Dropdown - MUI Select with overlay behavior */}
+      <FormControl style={{ margin: 8, minWidth: 120 }} variant="standard">
+        <InputLabel id="breakdown-select-label">Breakdown</InputLabel>
+        <Select
+          id="breakdown-select"
+          value={breakdown}
+          onChange={(e) => {
+            onBreakdownChange(e.target.value);
           }}
           disabled={loading}
-          size="md"
-        />
-      </div>
-
-      {/* Breakdown Dropdown - Carbon Component with overlay behavior */}
-      <div style={{ minWidth: "150px", flex: "0 0 auto" }}>
-        <Dropdown
-          id="breakdown-dropdown"
-          titleText="Breakdown"
-          items={breakdownOptions}
-          itemToString={(item) => (item ? item.label : "")}
-          selectedItem={selectedBreakdown}
-          onChange={({ selectedItem }) => {
-            // Carbon Dropdown automatically closes on selection
-            if (selectedItem) {
-              onBreakdownChange(selectedItem.id);
-            }
-          }}
-          disabled={loading}
-          size="md"
-        />
-      </div>
-
-      {/* Currency Dropdown - Carbon Component with overlay behavior */}
-      <div style={{ minWidth: "150px", flex: "0 0 auto" }}>
-        <Dropdown
-          id="currency-dropdown"
-          titleText="Currency"
-          items={currencyOptions}
-          itemToString={(item) => (item ? item.label : "")}
-          selectedItem={selectedCurrency}
-          onChange={({ selectedItem }) => {
-            // Carbon Dropdown automatically closes on selection
-            if (selectedItem) {
-              onCurrencyChange(selectedItem.id);
-            }
-          }}
-          disabled={loading}
-          size="md"
-        />
-      </div>
-
-      {/* Export Button - Carbon Component */}
-      <div style={{ flex: "0 0 auto" }}>
-        <Button
-          kind="ghost"
-          hasIconOnly
-          iconDescription="Export CSV"
-          onClick={onExport}
-          disabled={loading}
-          renderIcon={Download}
-          tooltipPosition="bottom"
         >
-          <Download size={20} />
-        </Button>
-      </div>
+          {breakdownOptions.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* Currency Dropdown - MUI Select with overlay behavior */}
+      <FormControl style={{ margin: 8, minWidth: 120 }} variant="standard">
+        <InputLabel id="currency-label">Currency</InputLabel>
+        <Select
+          id="currency"
+          value={currency}
+          onChange={(e) => onCurrencyChange(e.target.value)}
+          disabled={loading}
+        >
+          {currencyCodes?.map((currencyCode) => (
+            <MenuItem key={currencyCode} value={currencyCode}>
+              {currencyCode}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* Export Button - MUI IconButton matching Allocations page */}
+      <Tooltip title="Download CSV">
+        <IconButton onClick={onExport} disabled={loading} style={{ padding: 12 }}>
+          <ExportIcon />
+        </IconButton>
+      </Tooltip>
     </div>
   );
 };
